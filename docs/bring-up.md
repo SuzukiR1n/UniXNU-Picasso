@@ -15,12 +15,12 @@
 
 | 阶段 | 应取得的结果 |
 | --- | --- |
-| S0 源码/构建 | 本仓库 Actions 校验、UniXNU 应用、XNU 候选分别成功；审查失败日志 |
+| S0 源码/构建 | 校验、EFI 应用、iPhone X Apple 输入审计成功；完成 Darwin 22 的补丁/驱动 ABI 移植后再构建内核 |
 | S1 平台 | 独立 SM7250/Picasso DSC/FDF、内存图、原厂二进制来源与哈希、正确的 BootShim/boot header |
 | S2 UEFI | CPU、时钟、内存、GOP、按键和日志可用；集成 UniXNU、DarwinBoot、RamDisk、DiskIo、FAT |
 | S3 XNU 入口 | 按实际可用内存生成 ADT；单核启动；确认虚拟定时器 INTID 19 是否触发、计数是否增加 |
 | S4 存储 | 核对控制器版本、时钟/复位/PHY/SMMU，读取容量、GPT 和已知只读块 |
-| S5 用户空间 | 固定 IPSW/ABI/根卷与信任缓存，确认根卷挂载和 launchd；之后再做触控/加速/网络/电源 |
+| S5 用户空间 | 使用 iPhone X iOS 16.7.16 / 20H392 的 IPSW/ABI/根卷与信任缓存，确认根卷挂载和 launchd；之后再做触控/加速/网络/电源 |
 
 每次测试记录仓库提交、工具链、固件/镜像 SHA256、最后到达阶段、完整日志和下一项测量。只有自己的设备日志可以将 `porting.toml` 改为 `device-verified`。
 

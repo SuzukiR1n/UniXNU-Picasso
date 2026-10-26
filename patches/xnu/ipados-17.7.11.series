@@ -1,6 +1,0 @@
-# Same prelink/OS patches as the pinned official OS profile, excluding its
-# optional zzz-boot-progress.patch. That diagnostic patch does not apply after
-# the pinned ARM64 series (bsd_init.c PMGR hunk; Actions run 40261223463).
-# CONFIG_XNU_BOOT_PROGRESS remains disabled in this host-build baseline.
-component:XnuPrelink/patches/xnu-10063.141.1-security-init.patch
-component:XnuPrelink/patches/xnu-10063.141.1-sparse-index.patch

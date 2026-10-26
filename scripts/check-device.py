@@ -22,6 +22,11 @@ def check(source, dtc=False):
     assert pins['source'][0]['commit'] == (ROOT / 'upstream.rev').read_text().strip()
     assert board['board']['soc'] == 'SM7250'
     assert board['board']['name'] == 'picasso'
+    assert board['board']['os_profile'] == 'ios-16.7.16-20H392'
+    spec = importlib.util.spec_from_file_location('device_launcher', ROOT / 'scripts/unixnu.py')
+    launcher = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(launcher)
+    launcher.prepare(source)
     sys.path.insert(0, str(source / 'scripts'))
     from unixnu import cli, components, config, devicetree, feeds, kernel, patches
     check_output = ROOT / 'out/host-check'
@@ -65,9 +70,6 @@ def check(source, dtc=False):
                 assert 'DRAM range' in str(error), str(error)
             else:
                 raise AssertionError('Unqualified tree unexpectedly generated a payload ADT')
-    spec = importlib.util.spec_from_file_location('device_launcher', ROOT / 'scripts/unixnu.py')
-    launcher = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(launcher)
     for command in (['bootimg'], ['build', 'payload'], ['build', 'userdata'], ['build', 'firmware']):
         try:
             launcher.image_gate(command)
@@ -75,8 +77,16 @@ def check(source, dtc=False):
             assert 'measured board inputs' in str(error)
         else:
             raise AssertionError('Unqualified image build was not stopped')
-    launcher.image_gate(['build', 'kernel'])
+    for command in (['build', 'kernel'], ['build', 'prelink']):
+        try:
+            launcher.image_gate(command)
+        except ValueError as error:
+            assert 'iPhone X iOS 16 kernel ABI is not qualified' in str(error)
+        else:
+            raise AssertionError('Unqualified Darwin 23 recipe was accepted for iOS 16')
+    launcher.image_gate(['build', 'package'])
     print(json.dumps({'board': 'picasso', 'soc': 'SM7250', 'virtual_timer_intid': 19,
+                      'os_profile': board['board']['os_profile'],
                       'dtc_checked': dtc, 'hardware_boot_verified': False}, indent=2))
 
 

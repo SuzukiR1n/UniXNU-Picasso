@@ -3,22 +3,22 @@ schema_version = 1
 [device]
 name = "picasso"
 soc = "SM7250"
-os_profile = "ipados-17.7.11-21H461"
+os_profile = "ios-16.7.16-20H392"
 summary = "独立的 Redmi K30 5G / SM7250 早期移植：宿主机构建与设备运行结果分别记录。"
 
 [[area]]
 id = "configuration"
 status = "implemented"
-components = ["ArmDTPlatform", "SoftwareAES", "XnuPrelink", "DarwinBoot"]
-paths = ["board.toml", "feeds.toml", "configs/**", "sources.lock.toml", "upstream.rev", ".github/**", ".gitignore", ".gitattributes", "local.toml.example", "LICENSE"]
-inputs = ["官方 UniXNU 格式 2、ARM64 与 iPadOS 17.7.11 profile，SM7250 资源单独保存在本仓库。"]
-configuration = ["提供固定源码版本、13 项移植记录、Actions 校验/UEFI 应用/XNU 内核构建。"]
+components = ["XnuPrelink", "DarwinBoot"]
+paths = ["board.toml", "feeds.toml", "profiles/**", "configs/**", "sources.lock.toml", "upstream.rev", ".github/**", ".gitignore", ".gitattributes", "local.toml.example", "LICENSE"]
+inputs = ["官方 UniXNU 格式 2、ARM64 构建工具和本仓库独立 iPhone X iOS 16.7.16 profile，SM7250 资源单独保存在本仓库。"]
+configuration = ["提供固定源码版本、13 项移植记录、Actions 校验/UEFI 应用/iPhone X iOS 16 Apple 输入审计。"]
 procedure = ["按 README 的校验和构建步骤执行；真机阶段见 docs/bring-up.md。"]
-findings = ["提供固定源码版本、13 项移植记录、Actions 校验/UEFI 应用/XNU 内核构建。", "首轮 CI 验证与 EFI 应用成功；内核发现官方可选 boot-progress 补丁冲突，当前禁用该插桩并保留 OS 预链接补丁。"]
+findings = ["提供固定源码版本、13 项移植记录、Actions 校验/UEFI 应用/iPhone X iOS 16 Apple 输入审计。", "首轮 CI 验证与 EFI 应用成功；内核发现官方可选 boot-progress 补丁冲突，当前禁用该插桩并保留 OS 预链接补丁。", "默认目标改为 iPhone X iOS 16.7.16 / 20H392；Apple manifest 与 IM4P 摘要已独立核对。Darwin 22 补丁/驱动/预链接未移植，Darwin 23 内核成功只作为历史构建证据。"]
 completion = ["运行 Actions 并记录各任务的结果和提交版本。"]
-limits = ["配置可解析不代表硬件已支持；OS profile 只用于宿主机 ABI 基线。"]
+limits = ["配置可解析不代表硬件已支持；iOS 16 / Darwin 22 ABI 尚未移植，内核与预链接入口明确拒绝使用 Darwin 23 配方。"]
 next_action = ["运行 Actions 并记录各任务的结果和提交版本。"]
-evidence = [{ kind = "source", reference = "docs/source-audit.md", result = "提供固定源码版本、13 项移植记录、Actions 校验/UEFI 应用/XNU 内核构建。" }]
+evidence = [{ kind = "source", reference = "docs/source-audit.md", result = "提供固定源码版本、13 项移植记录、Actions 校验/UEFI 应用/iPhone X iOS 16 Apple 输入审计。" }]
 
 [[area]]
 id = "firmware"
@@ -37,12 +37,12 @@ evidence = []
 [[area]]
 id = "cpu"
 status = "implemented"
-components = ["ArmCpu"]
+components = []
 paths = ["drivers/ArmCpu/**", "socs/sm7250/configs/**", "tests/timer_ppi.cpp"]
 inputs = ["MiCode picasso-r-oss qcom/lito.dtsi：CPU affinities 0..0x700，19.2 MHz，GICD 0x17a00000，GICR 0x17a60000，stride 0x20000；虚拟 PPI 3。"]
 configuration = ["直接基于官方 ArmCpu 增加定时器描述解析，GIC 使能和 IRQ 分派统一使用 PPI+16；DTS 仅启用 CPU0。"]
 procedure = ["按 README 的校验和构建步骤执行；真机阶段见 docs/bring-up.md。"]
-findings = ["直接基于官方 ArmCpu 增加定时器描述解析，GIC 使能和 IRQ 分派统一使用 PPI+16；DTS 仅启用 CPU0。"]
+findings = ["直接基于官方 ArmCpu 增加定时器描述解析，GIC 使能和 IRQ 分派统一使用 PPI+16；DTS 仅启用 CPU0。", "默认目标改为 iPhone X iOS 16.7.16 / 20H392；Apple manifest 与 IM4P 摘要已独立核对。Darwin 22 补丁/驱动/预链接未移植，Darwin 23 内核成功只作为历史构建证据。"]
 completion = ["完整编译驱动后，在真机核对定时器中断计数与 GIC 状态，再逐个启用其他 CPU。"]
 limits = ["源文件中的定时器号还未通过目标设备的 CNTV/中断计数读回验证；SMP 未验证。"]
 next_action = ["完整编译驱动后，在真机核对定时器中断计数与 GIC 状态，再逐个启用其他 CPU。"]
@@ -166,23 +166,23 @@ status = "implemented"
 components = []
 paths = ["scripts/unixnu.py", "unixnu", "patches/**"]
 inputs = ["UniXNU 官方构建接口要求目标固件、boot header、完整 payload 与内存 handoff。"]
-configuration = ["入口阻止 payload/firmware/userdata/bootimg/all，直到 hardware.toml 的输入资格项通过；允许 kernel/package 宿主机构建。"]
+configuration = ["入口阻止 payload/firmware/userdata/bootimg/all，直到 hardware.toml 的输入资格项通过；允许 package 构建与 Apple IPSW 审计；kernel/prelink 需要先完成 Darwin 22 ABI 移植。"]
 procedure = ["按 README 的校验和构建步骤执行；真机阶段见 docs/bring-up.md。"]
-findings = ["入口阻止 payload/firmware/userdata/bootimg/all，直到 hardware.toml 的输入资格项通过；允许 kernel/package 宿主机构建。", "首轮 CI 验证与 EFI 应用成功；内核发现官方可选 boot-progress 补丁冲突，当前禁用该插桩并保留 OS 预链接补丁。"]
+findings = ["入口阻止 payload/firmware/userdata/bootimg/all，直到 hardware.toml 的输入资格项通过；允许 package 构建与 Apple IPSW 审计；kernel/prelink 需要先完成 Darwin 22 ABI 移植。", "首轮 CI 验证与 EFI 应用成功；内核发现官方可选 boot-progress 补丁冲突，当前禁用该插桩并保留 OS 预链接补丁。", "默认目标改为 iPhone X iOS 16.7.16 / 20H392；Apple manifest 与 IM4P 摘要已独立核对。Darwin 22 补丁/驱动/预链接未移植，Darwin 23 内核成功只作为历史构建证据。"]
 completion = ["补齐真实输入后建立包内容、地址、大小和哈希验证，再解除镜像门槛。"]
 limits = ["本仓库当前没有可启动的 boot.img；UniXNU.efi 是应用而非固件。"]
 next_action = ["补齐真实输入后建立包内容、地址、大小和哈希验证，再解除镜像门槛。"]
-evidence = [{ kind = "source", reference = "docs/source-audit.md", result = "入口阻止 payload/firmware/userdata/bootimg/all，直到 hardware.toml 的输入资格项通过；允许 kernel/package 宿主机构建。" }]
+evidence = [{ kind = "source", reference = "docs/source-audit.md", result = "入口阻止 payload/firmware/userdata/bootimg/all，直到 hardware.toml 的输入资格项通过；允许 package 构建与 Apple IPSW 审计；kernel/prelink 需要先完成 Darwin 22 ABI 移植。" }]
 
 [[area]]
 id = "diagnostics"
 status = "implemented"
 components = []
-paths = ["scripts/check-device.py", "scripts/inspect-stock.py", "tools/**", "unixnu.lock"]
+paths = ["scripts/check-device.py", "scripts/audit-ios16.py", "scripts/inspect-stock.py", "tools/**", "unixnu.lock"]
 inputs = ["官方 DTS、格式 2 resolver 与 FDT/ADT 编码器可做独立宿主机交叉检查。"]
 configuration = ["校验 GIC 地址/stride、CPU0 选择、定时器字节序与中断号、未测量内存的拒绝行为；提供只读输入采集和 boot header 检查。"]
 procedure = ["按 README 的校验和构建步骤执行；真机阶段见 docs/bring-up.md。"]
-findings = ["校验 GIC 地址/stride、CPU0 选择、定时器字节序与中断号、未测量内存的拒绝行为；提供只读输入采集和 boot header 检查。"]
+findings = ["校验 GIC 地址/stride、CPU0 选择、定时器字节序与中断号、未测量内存的拒绝行为；提供只读输入采集和 boot header 检查。", "默认目标改为 iPhone X iOS 16.7.16 / 20H392；Apple manifest 与 IM4P 摘要已独立核对。Darwin 22 补丁/驱动/预链接未移植，Darwin 23 内核成功只作为历史构建证据。"]
 completion = ["保存 Actions 产物和原厂镜像检查报告，再采集第一阶段 UEFI 日志。"]
 limits = ["没有连接手机；没有本仓库的真机启动证据。"]
 next_action = ["保存 Actions 产物和原厂镜像检查报告，再采集第一阶段 UEFI 日志。"]

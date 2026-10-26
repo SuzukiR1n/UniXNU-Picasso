@@ -4,17 +4,18 @@ schema_version = 2
 name = "picasso"
 soc = "SM7250"
 soc_source = "sm7250"
-os_profile = "ipados-17.7.11-21H461"
-description = "Redmi K30 5G: independent SM7250 bring-up, no device boot verified"
+os_profile = "ios-16.7.16-20H392"
+description = "Redmi K30 5G targeting iPhone X iOS 16; Darwin 22 ABI and firmware pending"
 kit = "picasso"
 
 [components]
-include = ["ArmDTPlatform", "ArmCpu", "SoftwareAES", "XnuPrelink", "DarwinBoot"]
+include = ["XnuPrelink", "DarwinBoot"]
 
 [kernel]
 defconfig = "picasso_defconfig"
-config_fragments = ["arch:configs/common.config", "soc:configs/sm7250.config", "os:configs/ipados.config"]
-patch_series = ["arch:patches/xnu/series", "soc:patches/xnu/series", "device:patches/xnu/ipados-17.7.11.series", "device:patches/xnu/series"]
+config_fragments = ["soc:configs/sm7250.config"]
+patch_series = ["soc:patches/xnu/series", "os:patches/xnu/series", "device:patches/xnu/series"]
+archives = []
 
 [device_tree]
 source = "device:dts/picasso.dts"

@@ -5,6 +5,11 @@ docs/source-audit.md before editing. Use official UniXNU components and primary
 vendor/hardware sources. Do not use other Picasso community ports as source or
 evidence. Do not infer RAM from the 128 GB storage capacity.
 
+The required target is iPhone X iOS 16 (currently pinned to 16.7.16/20H392),
+not the official iPadOS 17 profile. Read docs/ios16.md. Darwin 22 source, driver
+and prelink ABI qualification is pending. Preserve that explicit gate and do
+not turn a Darwin 23 build or Apple input audit into an iOS 16 support claim.
+
 Maintain format 2. Shared chip resources live under socs/sm7250; the local feed
 is versioned with the device. Preserve source pins, upstream notices, component
 IDs and runtime identifiers. Keep unqualified peripherals disabled. Do not

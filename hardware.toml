@@ -16,6 +16,7 @@ purpose = "Candidate input extraction baseline, not a required flash or tested f
 source_branch = "picasso-r-oss"
 
 [qualification]
+ios16_abi = false
 firmware_platform = false
 bootloader_memory_map = false
 reserved_memory = false

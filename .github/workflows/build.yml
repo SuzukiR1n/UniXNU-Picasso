@@ -6,8 +6,8 @@ on:
   pull_request:
   workflow_dispatch:
     inputs:
-      kernel:
-        description: Build the XNU host candidate on macOS
+      audit_os:
+        description: Audit the pinned iPhone X iOS 16 kernel on macOS
         type: boolean
         default: true
 
@@ -16,7 +16,7 @@ permissions:
 
 concurrency:
   group: picasso-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   validate:
@@ -41,8 +41,6 @@ jobs:
           persist-credentials: false
       - name: Install device tree compiler
         run: sudo apt-get update && sudo apt-get install -y device-tree-compiler
-      - name: Obtain the OS profile patch dependency
-        run: git -C upstream submodule update --init kits/XnuPrelink
       - name: Validate profiles, device tree and image gate
         run: |
           python scripts/check-device.py --upstream upstream --dtc
@@ -95,14 +93,11 @@ jobs:
             out/ARTIFACT-NOTE.txt
           retention-days: 14
 
-  kernel:
+  ios16-input-audit:
     needs: validate
-    if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.kernel)
+    if: github.event_name != 'workflow_dispatch' || inputs.audit_os
     runs-on: macos-26
-    timeout-minutes: 180
-    env:
-      HOMEBREW_NO_AUTO_UPDATE: '1'
-      HOMEBREW_NO_INSTALL_CLEANUP: '1'
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
         with:
@@ -110,35 +105,21 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Install build tools
+      - name: Verify Apple identity, kernel digest and Darwin major
         run: |
-          brew install cmake ninja unifdef llvm lld mtools dtc
-          echo "$(brew --prefix llvm)/bin" >> "$GITHUB_PATH"
-          echo "$(brew --prefix lld)/bin" >> "$GITHUB_PATH"
-          xcodebuild -version
-          xcrun --sdk iphoneos --show-sdk-path
-      - name: Compile and prelink the host kernel candidate
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-        run: |
-          python scripts/unixnu.py defconfig picasso_defconfig
-          mkdir -p out/ci
+          python scripts/unixnu.py --prepare
+          mkdir -p out/ios16-audit
           set -o pipefail
-          python scripts/unixnu.py build kernel -j 3 2>&1 | tee out/ci/kernel-build.log
-      - name: Record artifact meaning
+          python scripts/audit-ios16.py --upstream .cache/UniXNU --decode 2>&1 | tee out/ios16-audit/audit.log
+      - name: Record the remaining ABI work
         if: always()
         run: |
-          mkdir -p out/ci
-          echo 'Host kernel build candidate only. No firmware, RAM map, boot image, UFS root, or device boot has been qualified.' > out/ci/ARTIFACT-NOTE.txt
-          cat out/ci/ARTIFACT-NOTE.txt >> "$GITHUB_STEP_SUMMARY"
-          df -h . >> "$GITHUB_STEP_SUMMARY"
+          echo 'Target: iPhone X iOS 16.7.16 (20H392). This job audits Apple inputs; the Darwin 22 source/driver/prelink ABI port remains pending.' >> "$GITHUB_STEP_SUMMARY"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: picasso-xnu-host-candidate
+          name: picasso-iphone-x-ios16-input-audit
           path: |
-            out/**/kernel/kernel.macho*
-            out/**/logs/**
-            out/ci/**
-            unixnu.lock
+            out/ios16-audit/*.json
+            out/ios16-audit/*.log
           retention-days: 14

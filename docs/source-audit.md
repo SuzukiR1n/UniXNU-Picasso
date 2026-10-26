@@ -1,6 +1,6 @@
 # 独立源码审计（2026-10-26）
 
-本文件是源码证据，不是设备运行报告。硬件事实来自小米官方仓库；构建接口与组件来自 UniXNU 官方仓库。其他 Picasso 社区移植不作为实现依据。
+本文件是源码证据，不是设备运行报告。硬件事实来自小米官方仓库；构建接口与组件来自 UniXNU 官方仓库。其他 Picasso 社区移植不作为实现依据。**当前目标是 iPhone X iOS 16 / Darwin 22**；以下旧基线的构建结果只作历史记录，当前 OS 工作见 [iOS 16 记录](ios16.md)。
 
 | 项目 | 源文件与固定提交 | 本仓库决策 |
 | --- | --- | --- |
@@ -20,7 +20,7 @@ DTS 转换使用官方 `scripts/unixnu/devicetree.py`：FDT 大端 GIC specifier
 
 RAM、固件、boot header、framebuffer、GPT、存储写入和启动成功尚无本仓库设备证据。宿主机的完整内核/EFI 构建结果以本仓库 Actions 日志为准。
 
-首轮 Actions（`62a02f6739e2ce39e72cd2dc6763ee034c323e2d`，[run 40261223463](https://github.com/SuzukiR1n/UniXNU-Picasso/actions/runs/40261223463)）：DTS/ADT/C++ 与配置校验成功，UniXNU.efi 构建成功；内核停在官方可选 `zzz-boot-progress.patch` 的 `bsd_init.c` PMGR hunk。当前基线禁用 BOOT_PROGRESS，保留 OS 的两项预链接补丁，通过本仓库的 OS 补丁列表排除这项调试插桩，不改写官方构建工具。
+历史首轮 Actions（`62a02f6739e2ce39e72cd2dc6763ee034c323e2d`，[run 40261223463](https://github.com/SuzukiR1n/UniXNU-Picasso/actions/runs/40261223463)）：DTS/ADT/C++ 与配置校验成功，UniXNU.efi 构建成功；旧目标内核停在官方可选 `zzz-boot-progress.patch` 的 PMGR hunk。排除该调试插桩后，旧目标第二轮内核成功。当前 iOS 16 profile 不使用 Darwin 23 补丁与预链接地址。
 
 主要资料：
 

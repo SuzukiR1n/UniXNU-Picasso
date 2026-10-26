@@ -4,7 +4,7 @@ schema_version = 1
 name = "UniXNU"
 repository = "https://github.com/UniXNU/UniXNU.git"
 commit = "759eb61b6b8d475de5b3d1b39e1de1f5294e8d9a"
-role = "Build tools, component catalog, ARM64 and iPadOS profiles"
+role = "Build tools, component catalog, ARM64 build tools; the iPhone X OS profile is owned here"
 
 [[source]]
 name = "vendor-dts"

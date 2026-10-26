@@ -8,7 +8,7 @@ summary = "独立的 Redmi K30 5G / SM7250 早期移植：宿主机构建与设�
 
 [[area]]
 id = "configuration"
-status = "implemented"
+status = "host-verified"
 components = ["XnuPrelink", "DarwinBoot"]
 paths = ["board.toml", "feeds.toml", "profiles/**", "configs/**", "sources.lock.toml", "upstream.rev", ".github/**", ".gitignore", ".gitattributes", "local.toml.example", "LICENSE"]
 inputs = ["官方 UniXNU 格式 2、ARM64 构建工具和本仓库独立 iPhone X iOS 16.7.16 profile，SM7250 资源单独保存在本仓库。"]
@@ -18,7 +18,7 @@ findings = ["提供固定源码版本、13 项移植记录、Actions 校验/UEFI
 completion = ["运行 Actions 并记录各任务的结果和提交版本。"]
 limits = ["配置可解析不代表硬件已支持；iOS 16 / Darwin 22 ABI 尚未移植，内核与预链接入口明确拒绝使用 Darwin 23 配方。"]
 next_action = ["运行 Actions 并记录各任务的结果和提交版本。"]
-evidence = [{ kind = "source", reference = "docs/source-audit.md", result = "提供固定源码版本、13 项移植记录、Actions 校验/UEFI 应用/iPhone X iOS 16 Apple 输入审计。" }]
+evidence = [{ kind = "source", reference = "docs/source-audit.md", result = "提供固定源码版本、13 项移植记录、Actions 校验/UEFI 应用/iPhone X iOS 16 Apple 输入审计。" }, { kind = "host", reference = "https://github.com/SuzukiR1n/UniXNU-Picasso/actions/runs/40262916511", result = "配置/DTS/C++、EFI 应用、iPhone X Apple 内核摘要与 Darwin 22 arm64 审计成功；目标 ABI 与设备启动仍待完成。", command = "GitHub Actions: Picasso build and validation", revision = "e0941c2eaffdbe4868b939fc0c472881595676e9" }]
 
 [[area]]
 id = "firmware"
@@ -176,7 +176,7 @@ evidence = [{ kind = "source", reference = "docs/source-audit.md", result = "入
 
 [[area]]
 id = "diagnostics"
-status = "implemented"
+status = "host-verified"
 components = []
 paths = ["scripts/check-device.py", "scripts/audit-ios16.py", "scripts/inspect-stock.py", "tools/**", "unixnu.lock"]
 inputs = ["官方 DTS、格式 2 resolver 与 FDT/ADT 编码器可做独立宿主机交叉检查。"]
@@ -186,4 +186,4 @@ findings = ["校验 GIC 地址/stride、CPU0 选择、定时器字节序与中�
 completion = ["保存 Actions 产物和原厂镜像检查报告，再采集第一阶段 UEFI 日志。"]
 limits = ["没有连接手机；没有本仓库的真机启动证据。"]
 next_action = ["保存 Actions 产物和原厂镜像检查报告，再采集第一阶段 UEFI 日志。"]
-evidence = [{ kind = "source", reference = "docs/source-audit.md", result = "校验 GIC 地址/stride、CPU0 选择、定时器字节序与中断号、未测量内存的拒绝行为；提供只读输入采集和 boot header 检查。" }]
+evidence = [{ kind = "source", reference = "docs/source-audit.md", result = "校验 GIC 地址/stride、CPU0 选择、定时器字节序与中断号、未测量内存的拒绝行为；提供只读输入采集和 boot header 检查。" }, { kind = "host", reference = "https://github.com/SuzukiR1n/UniXNU-Picasso/actions/runs/40262916511", result = "配置/DTS/C++、EFI 应用、iPhone X Apple 内核摘要与 Darwin 22 arm64 审计成功；目标 ABI 与设备启动仍待完成。", command = "GitHub Actions: Picasso build and validation", revision = "e0941c2eaffdbe4868b939fc0c472881595676e9" }]

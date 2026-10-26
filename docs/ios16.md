@@ -14,6 +14,8 @@
 
 IM4P 的 SHA384 与苹果 manifest 的 Digest 和本仓库 pin 三者匹配。以上仅确认原始 Apple 输入。它不等于该系统能运行在 SM7250。
 
+[目标 Actions run 40262916511](https://github.com/SuzukiR1n/UniXNU-Picasso/actions/runs/40262916511) 的三个任务均成功：格式/DTS/C++ 校验、EFI 应用构建、Apple 输入审计。macOS 实际解压得到 `Darwin Kernel Version 22.6.0; xnu-8796.142.1.703.8~1/RELEASE_ARM64_T8015`，arm64 Mach-O SHA256 为 `2ec297bac95bcba01046fd0148e97e7e5885c05a6c18827f39f534ba375c1221`。完整元数据见 [审计报告](evidence/ios16-input-report.json)。公开源码候选 `8796.141.3` 与该二进制版本不同，ABI 比对仍是必需步骤。
+
 本仓库 OS profile 位于 `profiles/os/ios-16.7.16-20H392/`。启动工具将其复制到锁定官方 checkout 的 profile 目录，保留官方 resolver 不变。公开 Darwin 22 源码 `xnu-8796.141.3`（`1b191cb58250d0705d8a51287127505aa4bc0789`）目前只是**待进行 ABI 比对的源码候选**，不声称它与目标内核的所有私有接口一致。
 
 ## 还需要完成的内核工作

@@ -1,0 +1,26 @@
+{
+  "product": "iPhone10,3",
+  "device_class": "d22ap",
+  "version": "16.7.16",
+  "build": "20H392",
+  "chip_id": "0x8015",
+  "board_id": "0x06",
+  "apple_url": "https://updates.cdn-apple.com/2025FallFCS/fullrestores/122-77006/1158E502-D76D-4226-AA06-ED5E30CD1111/iPhone10,3,iPhone10,6_16.7.16_20H392_Restore.ipsw",
+  "manifest_sha256": "2d1452103a2f5ad71cb78d94454977fc70632472201980a468c247fba14b10b7",
+  "kernel_im4p_sha384": "64904730143fc2411c6b82c0611379050b15d8402d5403ca38c48eb4a42d3568152d785bf9e2c3797f9113771bf003e3",
+  "kernel_im4p_sha256": "2d6a13d040aaf87cec09bb6906d43e9bd8cea951e43d1aa1cd62707dfdc5aaec",
+  "components": {
+    "Cryptex1,SystemOS": "087-86593-047.dmg",
+    "DeviceTree": "Firmware/all_flash/DeviceTree.d22ap.im4p",
+    "KernelCache": "kernelcache.release.iphone10b",
+    "OS": "087-86698-044.dmg",
+    "StaticTrustCache": "Firmware/087-86698-044.dmg.trustcache"
+  },
+  "source_candidate": "1b191cb58250d0705d8a51287127505aa4bc0789",
+  "abi_qualified": false,
+  "device_boot_verified": false,
+  "darwin_kernel_string": "Darwin Kernel Version 22.6.0: Tue Jul  2 20:47:35 PDT 2024; root:xnu-8796.142.1.703.8~1/RELEASE_ARM64_T8015",
+  "kernel_macho_sha256": "2ec297bac95bcba01046fd0148e97e7e5885c05a6c18827f39f534ba375c1221",
+  "ci_revision": "e0941c2eaffdbe4868b939fc0c472881595676e9",
+  "workflow_run": "https://github.com/SuzukiR1n/UniXNU-Picasso/actions/runs/40262916511"
+}

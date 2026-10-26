@@ -1,0 +1,6 @@
+# The SM7250 profile is versioned atomically with this device repository.
+# Upstream supports repository-relative local SoC feeds.
+[[source]]
+name = "sm7250"
+kind = "soc"
+local = "socs/sm7250"

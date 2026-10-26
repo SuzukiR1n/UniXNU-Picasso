@@ -1,0 +1,24 @@
+schema_version = 2
+
+[board]
+name = "picasso"
+soc = "SM7250"
+soc_source = "sm7250"
+os_profile = "ipados-17.7.11-21H461"
+description = "Redmi K30 5G: independent SM7250 bring-up, no device boot verified"
+kit = "picasso"
+
+[components]
+include = ["ArmDTPlatform", "ArmCpu", "SoftwareAES", "XnuPrelink", "DarwinBoot"]
+
+[kernel]
+defconfig = "picasso_defconfig"
+config_fragments = ["arch:configs/common.config", "soc:configs/sm7250.config", "os:configs/ipados.config"]
+patch_series = ["arch:patches/xnu/series", "soc:patches/xnu/series", "os:patches/xnu/series", "device:patches/xnu/series"]
+
+[device_tree]
+source = "device:dts/picasso.dts"
+include_dirs = ["soc:dts"]
+
+# A firmware DSC/FD and a payload memory window are deliberately not invented.
+# scripts/unixnu.py refuses image creation until these have been qualified.

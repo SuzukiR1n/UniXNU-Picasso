@@ -1,0 +1,10 @@
+// SPDX-License-Identifier: BSD-2-Clause-Patent
+/dts-v1/;
+/include/ "sm7250.dtsi"
+
+/ {
+    model = "Xiaomi Redmi K30 5G";
+    compatible = "xiaomi,picasso", "qcom,sm7250";
+    // No memory node until the bootloader-fixed FDT and UEFI map are captured.
+    // The source DTS has zero RAM placeholders; 128 GB storage is not RAM.
+};

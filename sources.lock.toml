@@ -1,0 +1,26 @@
+schema_version = 1
+
+[[source]]
+name = "UniXNU"
+repository = "https://github.com/UniXNU/UniXNU.git"
+commit = "759eb61b6b8d475de5b3d1b39e1de1f5294e8d9a"
+role = "Build tools, component catalog, ARM64 and iPadOS profiles"
+
+[[source]]
+name = "vendor-dts"
+repository = "https://github.com/MiCode/kernel_devicetree.git"
+commit = "4eeaf08a0472a076aff622bb831dd19f53b1a56a"
+branch = "picasso-r-oss"
+role = "Primary hardware facts: qcom/lito.dtsi and qcom/picasso-sm7250.dtsi"
+
+[[source]]
+name = "ArmCpu"
+repository = "https://github.com/UniXNU/ArmCpu.git"
+commit = "9066b53bbc82e92a98ec44a11dd50fd13eaf1a1b"
+role = "Vendored generic component with local timer-specifier adaptation"
+
+[[source]]
+name = "Mu-Silicium-audit"
+repository = "https://github.com/Project-Silicium/Mu-Silicium.git"
+commit = "4cba43c90e02cdbefbcd9fcdbda33d2328deaec0"
+role = "Audit only: no Picasso platform in this revision; not used as device firmware"

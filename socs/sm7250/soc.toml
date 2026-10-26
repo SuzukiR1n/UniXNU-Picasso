@@ -1,0 +1,7 @@
+schema_version = 2
+
+[soc]
+name = "SM7250"
+description = "Source-derived Lito resources; firmware and runtime qualification pending"
+source_repository = "https://github.com/MiCode/kernel_devicetree"
+source_revision = "4eeaf08a0472a076aff622bb831dd19f53b1a56a"

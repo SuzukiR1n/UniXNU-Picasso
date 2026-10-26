@@ -1,0 +1,25 @@
+schema_version = 1
+
+[device]
+codename = "picasso"
+soc = "SM7250"
+storage_gb = 128
+bootloader_unlocked = true
+adb_available = false
+ram_confirmed = false
+firmware_version_confirmed = false
+
+[baseline]
+miui = "V12.5.9.0.RGICNXM"
+android = "11"
+purpose = "Candidate input extraction baseline, not a required flash or tested firmware"
+source_branch = "picasso-r-oss"
+
+[qualification]
+firmware_platform = false
+bootloader_memory_map = false
+reserved_memory = false
+gop_handoff = false
+boot_header = false
+partition_geometry = false
+device_boot = false

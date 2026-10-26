@@ -1,0 +1,3 @@
+# No proprietary binaries are redistributed.
+# Pending stock inputs: boot.img, dtbo.img, bootloader UEFI images and firmware.
+# Record their origin and SHA256 in an ignored inputs/manifest.json first.

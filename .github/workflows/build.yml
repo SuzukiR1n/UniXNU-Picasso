@@ -1,0 +1,144 @@
+name: Picasso build and validation
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      kernel:
+        description: Build the XNU host candidate on macOS
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: picasso-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      UNIXNU_SOURCE: ${{ github.workspace }}/upstream
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Read pinned upstream revision
+        run: echo "REV=$(cat upstream.rev)" >> "$GITHUB_ENV"
+      - uses: actions/checkout@v4
+        with:
+          repository: UniXNU/UniXNU
+          ref: ${{ env.REV }}
+          path: upstream
+          persist-credentials: false
+      - name: Install device tree compiler
+        run: sudo apt-get update && sudo apt-get install -y device-tree-compiler
+      - name: Obtain the OS profile patch dependency
+        run: git -C upstream submodule update --init kits/XnuPrelink
+      - name: Validate profiles, device tree and image gate
+        run: |
+          python scripts/check-device.py --upstream upstream --dtc
+          python upstream/scripts/porting-record.py check --device .
+          c++ -std=c++11 -Wall -Wextra -Werror -Idrivers/ArmCpu tests/timer_ppi.cpp -o /tmp/timer-ppi
+          /tmp/timer-ppi
+          python scripts/unixnu.py defconfig picasso_defconfig
+          python scripts/unixnu.py status --json > out/status.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: picasso-source-validation
+          path: |
+            out/status.json
+            board.toml
+            hardware.toml
+            sources.lock.toml
+          if-no-files-found: error
+
+  package:
+    needs: validate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: sudo apt-get update && sudo apt-get install -y clang lld llvm make gcc g++ uuid-dev nasm
+      - name: Build the shared UniXNU UEFI application
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          python scripts/unixnu.py defconfig picasso_defconfig
+          python scripts/unixnu.py build package -j 4
+      - name: Record artifact meaning
+        if: always()
+        run: |
+          mkdir -p out
+          echo 'UniXNU.efi is a UEFI application. This job does not build a Picasso firmware FD or a boot.img.' > out/ARTIFACT-NOTE.txt
+          cat out/ARTIFACT-NOTE.txt >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: picasso-unixnu-efi
+          path: |
+            out/**/package/Build/Out/**
+            out/**/logs/**
+            out/ARTIFACT-NOTE.txt
+          retention-days: 14
+
+  kernel:
+    needs: validate
+    if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.kernel)
+    runs-on: macos-26
+    timeout-minutes: 180
+    env:
+      HOMEBREW_NO_AUTO_UPDATE: '1'
+      HOMEBREW_NO_INSTALL_CLEANUP: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install build tools
+        run: |
+          brew install cmake ninja unifdef llvm lld mtools dtc
+          echo "$(brew --prefix llvm)/bin" >> "$GITHUB_PATH"
+          echo "$(brew --prefix lld)/bin" >> "$GITHUB_PATH"
+          xcodebuild -version
+          xcrun --sdk iphoneos --show-sdk-path
+      - name: Compile and prelink the host kernel candidate
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          python scripts/unixnu.py defconfig picasso_defconfig
+          mkdir -p out/ci
+          set -o pipefail
+          python scripts/unixnu.py build kernel -j 3 2>&1 | tee out/ci/kernel-build.log
+      - name: Record artifact meaning
+        if: always()
+        run: |
+          mkdir -p out/ci
+          echo 'Host kernel build candidate only. No firmware, RAM map, boot image, UFS root, or device boot has been qualified.' > out/ci/ARTIFACT-NOTE.txt
+          cat out/ci/ARTIFACT-NOTE.txt >> "$GITHUB_STEP_SUMMARY"
+          df -h . >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: picasso-xnu-host-candidate
+          path: |
+            out/**/kernel/kernel.macho*
+            out/**/logs/**
+            out/ci/**
+            unixnu.lock
+          retention-days: 14

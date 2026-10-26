@@ -1,0 +1,13 @@
+/upstream/
+/hardware-source/
+/firmware-source/
+/vendor-dts/
+/armcpu-source/
+/.cache/
+/out/
+/local.toml
+/unixnu.local.toml
+/inputs/
+__pycache__/
+*.pyc
+.DS_Store

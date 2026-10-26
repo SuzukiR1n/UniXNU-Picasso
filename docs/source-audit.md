@@ -20,6 +20,8 @@ DTS 转换使用官方 `scripts/unixnu/devicetree.py`：FDT 大端 GIC specifier
 
 RAM、固件、boot header、framebuffer、GPT、存储写入和启动成功尚无本仓库设备证据。宿主机的完整内核/EFI 构建结果以本仓库 Actions 日志为准。
 
+首轮 Actions（`62a02f6739e2ce39e72cd2dc6763ee034c323e2d`，[run 40261223463](https://github.com/SuzukiR1n/UniXNU-Picasso/actions/runs/40261223463)）：DTS/ADT/C++ 与配置校验成功，UniXNU.efi 构建成功；内核停在官方可选 `zzz-boot-progress.patch` 的 `bsd_init.c` PMGR hunk。当前基线禁用 BOOT_PROGRESS，保留 OS 的两项预链接补丁，通过本仓库的 OS 补丁列表排除这项调试插桩，不改写官方构建工具。
+
 主要资料：
 
 - [小米官方 Lito DTS](https://github.com/MiCode/kernel_devicetree/blob/4eeaf08a0472a076aff622bb831dd19f53b1a56a/qcom/lito.dtsi)

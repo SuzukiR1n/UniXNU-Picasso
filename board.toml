@@ -14,7 +14,7 @@ include = ["ArmDTPlatform", "ArmCpu", "SoftwareAES", "XnuPrelink", "DarwinBoot"]
 [kernel]
 defconfig = "picasso_defconfig"
 config_fragments = ["arch:configs/common.config", "soc:configs/sm7250.config", "os:configs/ipados.config"]
-patch_series = ["arch:patches/xnu/series", "soc:patches/xnu/series", "os:patches/xnu/series", "device:patches/xnu/series"]
+patch_series = ["arch:patches/xnu/series", "soc:patches/xnu/series", "device:patches/xnu/ipados-17.7.11.series", "device:patches/xnu/series"]
 
 [device_tree]
 source = "device:dts/picasso.dts"
